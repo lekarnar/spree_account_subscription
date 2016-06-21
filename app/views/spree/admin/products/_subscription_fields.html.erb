@@ -1,0 +1,7 @@
+<%= f.field_container :subscribable do %>
+  <%= f.label :subscribable, Spree.t(:subscribable, scope: 'activerecord.attributes.spree/account_subscription') %><br />
+  <%= f.check_box :subscribable %>
+<% end %>
+
+
+<%= render partial: 'spree/admin/variants/subscription_fields', locals: { f: f } %>

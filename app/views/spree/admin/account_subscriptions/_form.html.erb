@@ -1,0 +1,12 @@
+<%= f.field_container :product do %>
+  <%= f.label :product_id, Spree.t(:product) %><br />
+  <%= f.select :product_id, @products %>
+
+  <%= f.label :start_datetime, "Start Date" %><br />
+  <%= f.datetime_select :start_datetime %>
+
+  <%= f.label :end_datetime, "End Date" %><br />
+  <%= f.datetime_select :end_datetime %>
+
+  <%= f.error_message_on :product %>
+<% end %>

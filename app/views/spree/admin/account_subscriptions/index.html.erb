@@ -1,0 +1,54 @@
+<% content_for :page_title do %>
+  <%= Spree.t(:listing_subscriptions) %>
+<% end %>
+<!--
+<table class="index" id="listing_subscriptions">
+  <thead>
+    <tr>
+      <th><%= sort_link @search, :created_at, Spree.t(:created_at, scope: 'activerecord.attributes.spree/account_subscription') %></th>
+      <th><%= sort_link @search, :id, Spree.t(:id, scope: 'activerecord.attributes.spree/account_subscription') %></th>
+      <th><%= sort_link @search, :state, Spree.t(:state, scope: 'activerecord.attributes.spree/account_subscription') %></th>
+      <th><%= sort_link @search, :email, Spree.t(:email, scope: 'activerecord.attributes.spree/account_subscription') %></th>
+      <th><%= Spree.t(:firstname, scope: 'activerecord.attributes.spree/address') %></th>
+      <th><%= Spree.t(:lastname, scope: 'activerecord.attributes.spree/address') %></th>
+      <th data-hook="admin_subscriptions_index_header_actions"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @account_subscriptions.each do |subscription| %>
+      <tr>
+        <td><%= subscription.created_at.to_date %></td>
+        <td><%= link_to subscription.id, edit_object_url(subscription) %></td>
+        <td><%= Spree.t(subscription.state, scope: 'subscription_state').downcase %></td>
+        <td><%= subscription.email %></td>
+        <td class="actions" data-hook="admin_subscriptions_index_row_actions">
+          <%= link_to_edit subscription, no_text: true, class: 'edit' if can?(:edit, subscription)  %>
+          &nbsp;
+          <%= link_to_delete subscription, no_text: true if can?(:delete, subscription) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= paginate @account_subscriptions %>
+
+
+<% content_for :sidebar_title do %>
+  <%= Spree.t(:search) %>
+<% end %>
+
+<% content_for :sidebar do %>
+  <div class="box" data-hook="admin_subscriptions_index_search">
+    <h3><%= Spree.t(:search) %></h3>
+    <%= search_form_for [:admin, @search] do |f| %>
+      <p>
+        <%= label_tag nil, Spree.t(:email) %><br />
+        <%= f.text_field :email_cont, size: 25 %>
+      </p>
+      <div data-hook="admin_orders_index_search_buttons">
+        <p><%= button Spree.t(:search) %></p>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+-->
