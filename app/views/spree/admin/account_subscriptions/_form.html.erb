@@ -2,7 +2,12 @@
   <%= f.label :product_id, Spree.t(:product) %><br />
   <%= f.select :product_id, @products %>
 
-  <%= f.label :start_datetime, "Start Date" %><br />
+  <%= f.label :email, "Email" %><br />
+  <%= f.select :email, @emails %>
+
+
+
+    <%= f.label :start_datetime, "Start Date" %><br />
   <%= f.datetime_select :start_datetime %>
 
   <%= f.label :end_datetime, "End Date" %><br />
