@@ -8,6 +8,8 @@
       <th><%= sort_link @search, :created_at, Spree.t(:created_at, scope: 'activerecord.attributes.spree/account_subscription') %></th>
       <th><%= sort_link @search, :id, Spree.t(:id, scope: 'activerecord.attributes.spree/account_subscription') %></th>
       <th><%= sort_link @search, :state, Spree.t(:state, scope: 'activerecord.attributes.spree/account_subscription') %></th>
+      <th><%= sort_link @search, :ended, Spree.t("Ended", scope: 'activerecord.attributes.spree/account_subscription') %></th>
+
       <th><%= sort_link @search, :email, Spree.t(:email, scope: 'activerecord.attributes.spree/account_subscription') %></th>
       <th><%= Spree.t(:firstname, scope: 'activerecord.attributes.spree/address') %></th>
       <th><%= Spree.t(:lastname, scope: 'activerecord.attributes.spree/address') %></th>
@@ -20,6 +22,8 @@
         <td><%= subscription.created_at.to_date %></td>
         <td><%= link_to subscription.id, edit_object_url(subscription) %></td>
         <td><%= Spree.t(subscription.state, scope: 'subscription_state').downcase %></td>
+        <td><%= subscription.ended? %></td>
+
         <td><%= subscription.email %></td>
         <td class="actions" data-hook="admin_subscriptions_index_row_actions">
           <%= link_to_edit subscription, no_text: true, class: 'edit' if can?(:edit, subscription)  %>

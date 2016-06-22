@@ -5,7 +5,7 @@ module Spree
     private
 
     def include_user_subscriptions
-      @account_subscriptions = Spree::AccountSubscription.where(email: @user.email)
+      @account_subscriptions = Spree::AccountSubscription.where(user_id: @user.id)
     end
   end
 end

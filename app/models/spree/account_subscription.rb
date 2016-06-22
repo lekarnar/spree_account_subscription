@@ -1,7 +1,7 @@
 class Spree::AccountSubscription < ActiveRecord::Base
   belongs_to :product, class_name: 'Spree::Product'
 
-#  validates_with SubscriptionValidator
+  belongs_to :user, class_name: Spree.user_class
 
   scope :canceled, -> { where(state: :canceled) }
 
@@ -12,14 +12,14 @@ class Spree::AccountSubscription < ActiveRecord::Base
   end
 
   def self.subscribe!(opts)
-    opts.to_options!.assert_valid_keys(:email, :product, :start_datetime, :end_datetime)
+    opts.to_options!.assert_valid_keys(:email, :user, :product, :start_datetime, :end_datetime)
 
-    existing_subscription = self.where(email: opts[:email], product_id: opts[:product].id).first
+    existing_subscription = self.where(email: opts[:email], user_id: opts[:user].id, product_id: opts[:product].id).first
 
     if existing_subscription
       self.renew_subscription(existing_subscription, opts[:end_datemime])
     else
-      self.new_subscription(opts[:email], opts[:product], opts[:start_datetime], opts[:end_datetime])
+      self.new_subscription(opts[:email], opts[:user], opts[:product], opts[:start_datetime], opts[:end_datetime])
     end
   end
 
@@ -57,9 +57,10 @@ class Spree::AccountSubscription < ActiveRecord::Base
 
   private
 
-  def self.new_subscription(email, product, start_datetime, end_datetime)
+  def self.new_subscription(email, user, product, start_datetime, end_datetime)
     self.create do |s|
       s.email            = email
+      s.user_id         = user.id
       s.product_id      = product.id
       s.start_datetime = start_datetime
       s.end_datetime     = end_datetime

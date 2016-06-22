@@ -33,6 +33,10 @@ module Spree
 
       def create_or_update(flash_msg)
         if @account_subscription.update_attributes(subscription_params)
+          user = Spree::User.find_by(email: subscription_params[:email])
+          puts "USER:: #{user}"
+          @account_subscription.user_id=user.id
+          @account_subscription.save
           redirect_to edit_admin_account_subscription_path(@account_subscription)
           flash.notice = flash_msg
         else
@@ -41,7 +45,7 @@ module Spree
       end
 
       def subscription_params
-        params.require(:account_subscription).permit(:email, :product_id, :start_datetime, :end_datetime)
+        params.require(:account_subscription).permit(:email, :user_id, :product_id, :start_datetime, :end_datetime)
       end
     end
   end
