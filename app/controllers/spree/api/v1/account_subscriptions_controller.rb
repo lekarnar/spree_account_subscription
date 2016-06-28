@@ -11,19 +11,29 @@ module Spree
           authorize! :show, @account_subcription
 
           #status in the case that subscription has lapsed
-          status=403
+          status=211
 
-          dif = @account_subcription.end_datetime - DateTime.now
-          expires_in dif, :public => true
+          if !@account_subcription
+            #no subscription, no content to send
+            status=212
 
-          response.headers["Expires"] = @account_subcription.end_datetime.httpdate
+          else
 
-          if DateTime.now < @account_subcription.end_datetime
+            dif = @account_subcription.end_datetime - DateTime.now
+            expires_in dif, :public => true
 
-            #subscription is ok
-            status=200
+            response.headers["Expires"] = @account_subcription.end_datetime.httpdate
+
+            if DateTime.now < @account_subcription.end_datetime
+
+              #subscription is ok
+              status=200
+
+            end
+
 
           end
+
 
           render nothing: true, :status => status
         end
@@ -37,9 +47,6 @@ module Spree
                 order(:end_datetime).
                 find_by(user_id: params[:user_id])
 
-            if !@account_subcription
-              raise ActiveRecord::RecordNotFound
-            end
           end
 
       end

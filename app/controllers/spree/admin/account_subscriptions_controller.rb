@@ -11,7 +11,6 @@ module Spree
         params[:q] ||= {}
         @search = Spree::AccountSubscription.search(params[:q])
         @account_subscriptions = @search.result.page(params[:page]).per(15)
-        puts "Subscriptions: #{@account_subscriptions.count}"
       end
 
       def create
@@ -34,7 +33,6 @@ module Spree
       def create_or_update(flash_msg)
         if @account_subscription.update_attributes(subscription_params)
           user = Spree::User.find_by(email: subscription_params[:email])
-          puts "USER:: #{user}"
           @account_subscription.user_id=user.id
           @account_subscription.save
           redirect_to edit_admin_account_subscription_path(@account_subscription)
