@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_account_subscription'
-  s.version     = '3.1.0.rc3'
+  s.version     = '0.1'
   s.summary     = 'Extension for Account based subscriptions'
   s.description = 'Spree extension for account based subscriptions'
   s.required_ruby_version = '>= 2.1.0'
