@@ -1,7 +1,6 @@
-module Spree
-  Variant.class_eval do
+Spree::Variant.class_eval do
+  delegate :subscribable?, to: :product
 
-    delegate :subscribable?, to: :product
-
-  end
+  scope :subscribable, -> { joins(:product).merge(Spree::Product.subscribable) }
+  scope :unsubscribable, -> { joins(:product).merge(Spree::Product.unsubscribable) }
 end

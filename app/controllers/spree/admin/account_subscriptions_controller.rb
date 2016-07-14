@@ -4,13 +4,12 @@ module Spree
       before_filter :load_data, except: :index
 
       def show
-        redirect_to( action: :edit )
+        redirect_to :edit
       end
 
       def index
-        params[:q] ||= {}
-        @search = Spree::AccountSubscription.search(params[:q])
-        @account_subscriptions = @search.result.page(params[:page]).per(15)
+        @search = Spree::AccountSubscription.search(params[:q] || {})
+        @account_subscriptions = @search.result.page(params[:page]).per(Spree::Config[:admin_products_per_page])
       end
 
       def create
@@ -31,10 +30,7 @@ module Spree
       private
 
       def create_or_update(flash_msg)
-        if @account_subscription.update_attributes(subscription_params)
-          user = Spree::User.find_by(email: subscription_params[:email])
-          @account_subscription.user_id=user.id
-          @account_subscription.save
+        if @account_subscription.save(subscription_params)
           redirect_to edit_admin_account_subscription_path(@account_subscription)
           flash.notice = flash_msg
         else

@@ -1,17 +1,12 @@
-SpreeAccountSubscription
-========================
-
-Introduction goes here.
+Spree Account Subscription
+==========================
 
 ## Installation
 
 1. Add this extension to your Gemfile with this line:
   ```ruby
-  gem 'spree_account_subscription', github: '[your-github-handle]/spree_account_subscription', branch: 'X-X-stable'
+  gem 'spree_account_subscription', github: 'cehdeti/spree_account_subscription'
   ```
-
-  The `branch` option is important: it must match the version of Spree you're using.
-  For example, use `3-1-stable` if you're using Spree `3-1-stable` or any `3.1.x` version.
 
 2. Install the gem using Bundler:
   ```ruby
@@ -43,11 +38,6 @@ Simply add this require statement to your spec_helper:
 require 'spree_account_subscription/factories'
 ```
 
-
 ## Contributing
 
-If you'd like to contribute, please take a look at the
-[instructions](CONTRIBUTING.md) for installing dependencies and crafting a good
-pull request.
-
-Copyright (c) 2016 [name of extension creator], released under the New BSD License
+Copyright (c) 2016 ETI, released under the New BSD License

@@ -1,74 +1,51 @@
 class Spree::AccountSubscription < ActiveRecord::Base
-  belongs_to :product, class_name: 'Spree::Product'
+  ENDING_THRESHOLD = 30.days
+  SUBSCRIPTION_LENGTH = 1.year
 
-  belongs_to :user, class_name: Spree.user_class
+  with_options required: true do
+    belongs_to :product, class_name: 'Spree::Product'
+    belongs_to :user, class_name: Spree.user_class
+  end
 
+  validates :start_datetime, :end_datetime, presence: true
+
+  before_save :set_user_by_email, if: -> { email_changed? && user_id.nil? }
+
+  scope :ended, -> { where('end_datetime <= NOW()') }
+  scope :ending, -> { where(end_datetime: Time.now.utc..(Time.now.utc + ENDING_THRESHOLD)) }
   scope :canceled, -> { where(state: :canceled) }
 
   state_machine :state, initial: :active do
     event :cancel do
-      transition to: :canceled, if: :allow_cancel?
-    end
-  end
-
-  def self.subscribe!(opts)
-    opts.to_options!.assert_valid_keys(:email, :user, :product, :start_datetime, :end_datetime)
-
-    existing_subscription = self.where(email: opts[:email], user_id: opts[:user].id, product_id: opts[:product].id).first
-
-    if existing_subscription
-      self.renew_subscription(existing_subscription, opts[:end_datemime])
-    else
-      self.new_subscription(opts[:email], opts[:user], opts[:product], opts[:start_datetime], opts[:end_datetime])
+      transition to: :canceled, unless: :canceled?
     end
   end
 
   def ended?
-    DateTime.now > end_datetime
+    Time.now.utc >= end_datetime
   end
 
   def ending?
-    DateTime.now - 30.days > end_datetime
+    !ended? && Time.now.utc - ENDING_THRESHOLD >= end_datetime
   end
 
-  def canceled?
-    return state.intern == :canceled
+  def renew!
+    increment(:end_datetime, SUBSCRIPTION_LENGTH)
+    save!
   end
 
-  def notify_ended!
-    if Spree::Subscriptions::Config.use_delayed_job
-      Spree::SubscriptionMailer.delay.subscription_ended_email(self)
-    else
-      Spree::SubscriptionMailer.subscription_ended_email(self).deliver
-    end
-  end
+  def self.subscribe!(opts)
+    opts.to_options!.assert_valid_keys(:email, :user, :product)
 
-  def notify_ending!
-    if Spree::Subscriptions::Config.use_delayed_job
-      Spree::SubscriptionMailer.delay.subscription_ending_email(self)
-    else
-      Spree::SubscriptionMailer.subscription_ending_email(self).deliver
-    end
-  end
-
-  def allow_cancel?
-    self.state != 'canceled'
+    find_or_initialize_by(opts.slice(:email, :user, :product)) do |s|
+      s.start_datetime = Time.now.utc
+      s.end_datetime = Time.now.utc
+    end.renew!
   end
 
   private
 
-  def self.new_subscription(email, user, product, start_datetime, end_datetime)
-    self.create do |s|
-      s.email            = email
-      s.user_id         = user.id
-      s.product_id      = product.id
-      s.start_datetime = start_datetime
-      s.end_datetime     = end_datetime
-    end
-  end
-
-  def self.renew_subscription(old_subscription, new_end_datetime)
-    old_subscription.update_attribute(:end_datetime, new_end_datetime)
-    old_subscription
+  def set_user_by_email
+    self.user = Spree::User.find_by(email: email)
   end
 end
