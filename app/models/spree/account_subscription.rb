@@ -5,6 +5,7 @@ class Spree::AccountSubscription < ActiveRecord::Base
 
   belongs_to :user, class_name: Spree.user_class
 
+  belongs_to :order, class_name: 'Spree::Order'
 
   has_many :subscription_seats, foreign_key: "account_subscription_id"
 
@@ -19,14 +20,14 @@ class Spree::AccountSubscription < ActiveRecord::Base
   end
 
   def self.subscribe!(opts)
-    opts.to_options!.assert_valid_keys(:email, :user, :product, :start_datetime, :end_datetime, :num_seats)
+    opts.to_options!.assert_valid_keys(:email, :user, :product, :start_datetime, :end_datetime, :order, :num_seats)
 
-    existing_subscription = self.where(email: opts[:email], user_id: opts[:user].id, product_id: opts[:product].id, num_seats: opts[:num_seats]).first
+    existing_subscription = self.where(email: opts[:email], user_id: opts[:user].id, product_id: opts[:product].id, order: opts[:order].id, num_seats: opts[:num_seats]).first
 
     if existing_subscription
       self.renew_subscription(existing_subscription, opts[:end_datemime])
     else
-      self.new_subscription(opts[:email], opts[:user], opts[:product], opts[:start_datetime], opts[:end_datetime], opts[:num_seats])
+      self.new_subscription(opts[:email], opts[:user], opts[:product], opts[:start_datetime], opts[:end_datetime], opts[:order], opts[:num_seats])
     end
   end
 
@@ -66,13 +67,14 @@ class Spree::AccountSubscription < ActiveRecord::Base
   private
 
 
-  def self.new_subscription(email, user, product, start_datetime, end_datetime, num_seats)
+  def self.new_subscription(email, user, product, start_datetime, end_datetime, order, num_seats)
 
 
     self.create do |s|
       s.email               = email
       s.user_id             = user.id
       s.product_id          = product.id
+      s.order_id            = order.id
       s.start_datetime      = start_datetime
       s.end_datetime        = end_datetime
       s.num_seats           = num_seats
