@@ -6,5 +6,7 @@ module Spree
 
     scope :subscribable, -> { where(subscribable: true) }
     scope :unsubscribable, -> { where(subscribable: false) }
+
+
   end
 end

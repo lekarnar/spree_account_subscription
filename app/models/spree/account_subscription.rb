@@ -1,9 +1,16 @@
+require 'has_secure_token'
+
 class Spree::AccountSubscription < ActiveRecord::Base
   belongs_to :product, class_name: 'Spree::Product'
 
   belongs_to :user, class_name: Spree.user_class
 
+
+  has_many :subscription_seats, foreign_key: "account_subscription_id"
+
   scope :canceled, -> { where(state: :canceled) }
+
+  has_secure_token
 
   state_machine :state, initial: :active do
     event :cancel do
@@ -12,14 +19,14 @@ class Spree::AccountSubscription < ActiveRecord::Base
   end
 
   def self.subscribe!(opts)
-    opts.to_options!.assert_valid_keys(:email, :user, :product, :start_datetime, :end_datetime)
+    opts.to_options!.assert_valid_keys(:email, :user, :product, :start_datetime, :end_datetime, :num_seats)
 
-    existing_subscription = self.where(email: opts[:email], user_id: opts[:user].id, product_id: opts[:product].id).first
+    existing_subscription = self.where(email: opts[:email], user_id: opts[:user].id, product_id: opts[:product].id, num_seats: opts[:num_seats]).first
 
     if existing_subscription
       self.renew_subscription(existing_subscription, opts[:end_datemime])
     else
-      self.new_subscription(opts[:email], opts[:user], opts[:product], opts[:start_datetime], opts[:end_datetime])
+      self.new_subscription(opts[:email], opts[:user], opts[:product], opts[:start_datetime], opts[:end_datetime], opts[:num_seats])
     end
   end
 
@@ -55,16 +62,22 @@ class Spree::AccountSubscription < ActiveRecord::Base
     self.state != 'canceled'
   end
 
+
   private
 
-  def self.new_subscription(email, user, product, start_datetime, end_datetime)
+
+  def self.new_subscription(email, user, product, start_datetime, end_datetime, num_seats)
+
+
     self.create do |s|
-      s.email            = email
-      s.user_id         = user.id
-      s.product_id      = product.id
-      s.start_datetime = start_datetime
-      s.end_datetime     = end_datetime
+      s.email               = email
+      s.user_id             = user.id
+      s.product_id          = product.id
+      s.start_datetime      = start_datetime
+      s.end_datetime        = end_datetime
+      s.num_seats           = num_seats
     end
+
   end
 
   def self.renew_subscription(old_subscription, new_end_datetime)
