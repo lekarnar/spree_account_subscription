@@ -9,7 +9,7 @@
 <div data-hook="admin_subscription_edit_form">
   <div id="subscription-form-wrapper">
     <%= form_for [:admin, @account_subscription] do |f| %>
-      <%= render partial: 'form', locals: { f: f } %>
+      <%= render partial: 'form', locals: { f: f, token: @account_subscription.token } %>
       <p class="form-buttons">
         <%= button Spree.t("update") %> 
       </p>

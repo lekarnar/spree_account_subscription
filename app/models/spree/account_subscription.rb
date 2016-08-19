@@ -13,6 +13,8 @@ class Spree::AccountSubscription < ActiveRecord::Base
 
   has_secure_token
 
+  after_save :take_seat
+
   state_machine :state, initial: :active do
     event :cancel do
       transition to: :canceled, if: :allow_cancel?
@@ -32,11 +34,15 @@ class Spree::AccountSubscription < ActiveRecord::Base
   end
 
   def ended?
-    DateTime.now > end_datetime
+    if end_datetime?
+      DateTime.now > end_datetime
+    end
   end
 
   def ending?
-    DateTime.now - 30.days > end_datetime
+    if end_datetime?
+      DateTime.now - 30.days > end_datetime
+    end
   end
 
   def canceled?
@@ -67,6 +73,7 @@ class Spree::AccountSubscription < ActiveRecord::Base
   private
 
 
+
   def self.new_subscription(email, user, product, start_datetime, end_datetime, order, num_seats)
 
 
@@ -80,10 +87,25 @@ class Spree::AccountSubscription < ActiveRecord::Base
       s.num_seats           = num_seats
     end
 
+
   end
 
   def self.renew_subscription(old_subscription, new_end_datetime)
     old_subscription.update_attribute(:end_datetime, new_end_datetime)
     old_subscription
+  end
+
+  def self.take_seat
+    print 'taking seat!!'
+    user = Spree::User.find_by(id:self.user_id)
+    print "got user to take seat #{user}"
+    unless Spree::SubscriptionSeat.find_by(user:user, account_subscription:self)
+      Spree::SubscriptionSeat.redeem!(
+          user: user,
+          account_subscription: self
+      )
+      print "Took seat!!!"
+    end
+
   end
 end

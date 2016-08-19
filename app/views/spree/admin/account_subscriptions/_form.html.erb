@@ -1,17 +1,23 @@
 <%= f.field_container :product do %>
   <%= f.label :product_id, Spree.t(:product) %><br />
   <%= f.select :product_id, @products %>
-
+  <br/>
   <%= f.label :email, "Email" %><br />
   <%= f.select :email, @emails %>
-
+  <br/>
 
 
     <%= f.label :start_datetime, "Start Date" %><br />
   <%= f.datetime_select :start_datetime %>
-
+  <br/>
   <%= f.label :end_datetime, "End Date" %><br />
   <%= f.datetime_select :end_datetime %>
+  <br/>
+    <%= f.label :num_seats, "Number of Seats" %><br />
+    <%= f.number_field :num_seats %>
+  <br/>
+
+
 
   <%= f.error_message_on :product %>
 <% end %>
