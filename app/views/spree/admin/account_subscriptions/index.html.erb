@@ -11,8 +11,6 @@
       <th><%= sort_link @search, :ended, Spree.t("Ended", scope: 'activerecord.attributes.spree/account_subscription') %></th>
 
       <th><%= sort_link @search, :email, 'Subscription Owner' %></th>
-      <th>Num Seats</th>
-      <th>Auth Token</th>
 
       <th><%= Spree.t(:lastname, scope: 'activerecord.attributes.spree/address') %></th>
       <th data-hook="admin_subscriptions_index_header_actions"></th>
@@ -27,8 +25,6 @@
         <td><%= subscription.ended? %></td>
 
         <td><%= subscription.email %></td>
-        <td><%= subscription.num_seats %></td>
-        <td><%= subscription.token %></td>
 
         <td class="actions" data-hook="admin_subscriptions_index_row_actions">
           <%= link_to_edit subscription, no_text: true, class: 'edit' if can?(:edit, subscription)  %>
