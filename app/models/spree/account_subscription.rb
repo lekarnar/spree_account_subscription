@@ -13,8 +13,6 @@ class Spree::AccountSubscription < ActiveRecord::Base
 
   has_secure_token
 
-  after_save :take_seat
-
   state_machine :state, initial: :active do
     event :cancel do
       transition to: :canceled, if: :allow_cancel?
@@ -95,17 +93,4 @@ class Spree::AccountSubscription < ActiveRecord::Base
     old_subscription
   end
 
-  def self.take_seat
-    print 'taking seat!!'
-    user = Spree::User.find_by(id:self.user_id)
-    print "got user to take seat #{user}"
-    unless Spree::SubscriptionSeat.find_by(user:user, account_subscription:self)
-      Spree::SubscriptionSeat.redeem!(
-          user: user,
-          account_subscription: self
-      )
-      print "Took seat!!!"
-    end
-
-  end
 end
