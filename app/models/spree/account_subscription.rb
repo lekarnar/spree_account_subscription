@@ -13,6 +13,8 @@ class Spree::AccountSubscription < ActiveRecord::Base
 
   has_secure_token
 
+  after_save :take_seat
+
   state_machine :state, initial: :active do
     event :cancel do
       transition to: :canceled, if: :allow_cancel?
@@ -68,6 +70,19 @@ class Spree::AccountSubscription < ActiveRecord::Base
   end
 
 
+  def take_seat
+    user = Spree::User.find_by(id:self.user_id)
+    unless Spree::SubscriptionSeat.find_by(user:user, account_subscription:self)
+      Spree::SubscriptionSeat.redeem!(
+          user: user,
+          account_subscription: self
+      )
+    end
+
+  end
+
+
+
   private
 
 
@@ -92,5 +107,8 @@ class Spree::AccountSubscription < ActiveRecord::Base
     old_subscription.update_attribute(:end_datetime, new_end_datetime)
     old_subscription
   end
+
+
+
 
 end

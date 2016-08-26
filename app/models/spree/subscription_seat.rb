@@ -17,8 +17,8 @@ class Spree::SubscriptionSeat < ActiveRecord::Base
 
   def self.new_redemption( user, account_subscription )
     self.create do |s|
-      s.user_id         = user.id
-      s.account_subscription      = account_subscription.id
+      s.user_id                      = user.id
+      s.account_subscription_id      = account_subscription.id
     end
   end
 
