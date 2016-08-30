@@ -48,7 +48,6 @@ module Spree
               #otherwise look for a subscription seat
               get_by_token
             end
-            puts "account subscription? #{@account_subcription}"
           end
 
           def get_by_user_id
@@ -61,14 +60,11 @@ module Spree
             subscription = Spree::AccountSubscription
                                        .find_by(token: params[:registration_code])
 
-            puts "getting by token : #{subscription}"
             if subscription
               seat = get_subscription_seat subscription
-              puts "found subscription seat: #{seat}"
             end
 
             if seat
-              puts "setting @account subscription"
               @account_subcription = subscription
             end
 
@@ -76,12 +72,9 @@ module Spree
 
           def get_subscription_seat( subscription )
             user_id = params[:user_id]
-            puts "getting subscription seat for user: #{user_id}"
             seat = subscription.get_seat user_id
-            puts "Checked for existing seat: #{seat}"
             unless seat
               seat = subscription.take_seat user_id
-              puts "no existing seat, try taking a new one: #{seat}"
             end
 
             seat

@@ -94,8 +94,6 @@ class Spree::AccountSubscription < ActiveRecord::Base
   end
 
   def claim_owner_seat
-    puts "claiming owner seat!!"
-    puts YAML::dump(self)
     take_seat self.user_id
   end
 
