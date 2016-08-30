@@ -2,8 +2,8 @@
   <%= f.label :product_id, Spree.t(:product) %><br />
   <%= f.select :product_id, @products %>
   <br/>
-  <%= f.label :email, "Email" %><br />
-  <%= f.select :email, @emails %>
+  <%= f.label :user_id, "User" %><br />
+  <%= f.select :user_id, @users %>
   <br/>
 
 
@@ -14,7 +14,11 @@
   <%= f.datetime_select :end_datetime %>
   <br/>
   <br/>
-
+  <%= f.label :num_seats, "Number of Seats" %><br />
+  <%= f.number_field :num_seats %>
+  <br/><br/>
+  <%= f.label :token, "Token" %><br />
+  <%= f.text_field :token %>
 
 
   <%= f.error_message_on :product %>

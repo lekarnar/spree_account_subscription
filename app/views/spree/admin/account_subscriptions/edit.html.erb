@@ -6,6 +6,12 @@
   <%= render partial: 'spree/shared/error_messages', locals: { target: @account_subscription } %>
 </div>
 
+<div>
+  <p>Total seats: <%= @account_subscription.num_seats %></p>
+  <p>Seats used: <%= @account_subscription.seats_taken %></p>
+
+</div>
+
 <div data-hook="admin_subscription_edit_form">
   <div id="subscription-form-wrapper">
     <%= form_for [:admin, @account_subscription] do |f| %>

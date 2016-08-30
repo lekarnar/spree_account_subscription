@@ -13,7 +13,7 @@ class Spree::AccountSubscription < ActiveRecord::Base
 
   has_secure_token
 
-  after_save :take_seat
+  after_create :claim_owner_seat
 
   state_machine :state, initial: :active do
     event :cancel do
@@ -46,7 +46,7 @@ class Spree::AccountSubscription < ActiveRecord::Base
   end
 
   def canceled?
-    return state.intern == :canceled
+    state.intern == :canceled
   end
 
   def notify_ended!
@@ -69,19 +69,35 @@ class Spree::AccountSubscription < ActiveRecord::Base
     self.state != 'canceled'
   end
 
-
-  def take_seat
-    user = Spree::User.find_by(id:self.user_id)
-    unless Spree::SubscriptionSeat.find_by(user:user, account_subscription:self)
-      Spree::SubscriptionSeat.redeem!(
-          user: user,
-          account_subscription: self
-      )
-    end
-
+  def seats_taken
+    subscription_seats.count
   end
 
+  def seats_remaining?
+    seats_taken < num_seats
+  end
 
+  def get_seat( user_id )
+    Spree::SubscriptionSeat.find_by(user_id:user_id, account_subscription:self)
+  end
+
+  def take_seat( user_id )
+    seat = nil
+
+    if seats_remaining?
+      seat = Spree::SubscriptionSeat.create(
+                      user_id: user_id,
+                      account_subscription_id: self.id )
+    end
+
+    seat
+  end
+
+  def claim_owner_seat
+    puts "claiming owner seat!!"
+    puts YAML::dump(self)
+    take_seat self.user_id
+  end
 
   private
 
@@ -99,7 +115,6 @@ class Spree::AccountSubscription < ActiveRecord::Base
       s.end_datetime        = end_datetime
       s.num_seats           = num_seats
     end
-
 
   end
 
