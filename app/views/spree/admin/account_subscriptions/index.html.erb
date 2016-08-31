@@ -1,7 +1,6 @@
 <% content_for :page_title do %>
   <%= Spree.t(:listing_subscriptions) %>
 <% end %>
-
 <table class="index" id="listing_subscriptions">
   <thead>
     <tr>
@@ -38,11 +37,10 @@
 <%= paginate @account_subscriptions %>
 
 
-<% content_for :sidebar_title do %>
-  <%= Spree.t(:search) %>
-<% end %>
 
 <% content_for :sidebar do %>
+    <h4>    <%= link_to 'Create New Subscription', new_object_url %></h4>
+
   <div class="box" data-hook="admin_subscriptions_index_search">
     <h3><%= Spree.t(:search) %></h3>
     <%= search_form_for [:admin, @search] do |f| %>
