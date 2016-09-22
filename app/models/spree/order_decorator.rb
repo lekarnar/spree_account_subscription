@@ -2,8 +2,12 @@ module Spree
   Order.class_eval do
 
     def create_subscriptions
+
+      if !self.user
+        self.user = Spree::User.find_by(:email => self.email)
+      end
+
       line_items.each do |line_item|
-        logger.debug "CREATINGSUBSCRIPTION: #{line_item} QUANTITY: #{line_item.quantity}, and self: #{self}"
         if line_item.variant.subscribable?
           AccountSubscription.subscribe!(
             email: self.email,
